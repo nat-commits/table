@@ -7,5 +7,38 @@
 <body>
 <p>table</p>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.2.0/peerjs.min.js" integrity="sha256-Ya6g8SLqy1sNYWZaMQxji0BaxwSn3V5OA4vtJA7VdAw=" crossorigin="anonymous"></script>
+<script>
+(function() {
+    const peer = new Peer();
+    const clients = {};
+
+    peer.on('open', (id) => {
+        console.log('My peer ID is: ' + id);
+    });
+    peer.on('connection', function(conn) {
+      conn.on('data', function(data){
+        // Will print 'hi!'
+        console.log(data);
+      });
+    });
+
+
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+
+    if (code) {
+        const conn = peer.connect(code)
+        conn.on('open', function () {
+            conn.on('data', function (data) {
+                console.log('Received', data);
+            });
+
+            // Send messages
+            conn.send('Hello!');
+        });
+    }
+})();
+</script>
 </body>
 </html>
